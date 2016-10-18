@@ -35,13 +35,23 @@ trait Solver extends GameDef {
    */
   def neighborsWithHistory(b: Block, history: List[Move]): Stream[(Block, List[Move])] = {
 
-
-    //get the last move
-    history.head match {
+    val nextBlock = history.head match {
       case Left  => b.left
       case Up    => b.up
       case Right => b.right
       case Down  => b.down
+    }
+
+
+    history match {
+      case x :: xs =>
+        if(nextBlock.isLegal) (nextBlock, history.tail) #:: neighborsWithHistory(b.left,  xs)
+        else (nextBlock, history.tail) #:: neighborsWithHistory(b.left,  xs)
+
+      case x :: Nil =>
+        if(nextBlock.isLegal)(nextBlock, Nil) #:: Stream.empty
+        else (nextBlock, history.tail) #:: Stream.empty
+
     }
 
   }

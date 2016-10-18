@@ -42,8 +42,7 @@ assignmentsMap := {
       partId = "DZTNG",
       maxScore = 10d,
       styleScoreRatio = 0.2,
-      styleSheet = styleSheetPath,
-      //dependencies = depsQuickcheck),
+      styleSheet = styleSheetPath),
     "calculator" -> Assignment(
       packageName = "calculator",
       key = "QWry5Q33EeaVNg5usvFqrw",
