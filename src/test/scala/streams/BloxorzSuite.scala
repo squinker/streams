@@ -182,6 +182,41 @@ class BloxorzSuite extends FunSuite {
 
   }
 
+
+  test("neigbours with history from instructions") {
+
+    new Level1 {
+
+      val s = Block(Pos(2,2), Pos(2,2))
+
+      val leftBlock  = Block(Pos(2,0), Pos(2,1))
+      val stream = neighborsWithHistory(Block(Pos(1,1),Pos(1,1)), List(Left,Up)) toSet
+
+      assert(stream == Set(
+        (Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up)),
+        (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+      )
+      )
+    }
+  }
+
+
+  test("neigbours with history from instructions only take 1 ") {
+
+    new Level1 {
+
+      val s = Block(Pos(2,2), Pos(2,2))
+
+      val leftBlock  = Block(Pos(2,0), Pos(2,1))
+      val stream = neighborsWithHistory(Block(Pos(1,1),Pos(1,1)), List(Left,Up)) take 1 toSet
+
+      assert(stream == Set(
+        (Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up))
+      )
+      )
+    }
+  }
+
   test("Test done") {
 
     new Level1 {

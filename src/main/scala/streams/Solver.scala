@@ -35,24 +35,19 @@ trait Solver extends GameDef {
    */
   def neighborsWithHistory(b: Block, history: List[Move]): Stream[(Block, List[Move])] = {
 
-    val nextBlock = history.head match {
-      case Left  => b.left
-      case Up    => b.up
-      case Right => b.right
-      case Down  => b.down
+    def helper(neighbours: List[(Block, Move)]): Stream[(Block, List[Move])] = {
+      neighbours match {
+        case x :: xs =>
+
+          println("** x" + x)
+          (x._1, x._2 :: history ) #:: helper(xs)
+        case Nil     =>
+          println("** EMpty")
+          Stream.empty
+      }
     }
 
-
-    history match {
-      case x :: xs =>
-        if(nextBlock.isLegal) (nextBlock, history.tail) #:: neighborsWithHistory(b.left,  xs)
-        else (nextBlock, history.tail) #:: neighborsWithHistory(b.left,  xs)
-
-      case x :: Nil =>
-        if(nextBlock.isLegal)(nextBlock, Nil) #:: Stream.empty
-        else (nextBlock, history.tail) #:: Stream.empty
-
-    }
+    helper(b.legalNeighbors)
 
   }
 
