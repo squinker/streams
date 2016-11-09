@@ -44,6 +44,7 @@ class BloxorzSuite extends FunSuite {
   }
 
 
+  /*
 	test("terrain function level 1") {
     new Level1 {
       assert(terrain(Pos(0,0)), "0,0")
@@ -103,6 +104,24 @@ class BloxorzSuite extends FunSuite {
     }
   }
 
+*/
+
+
+  /*
+
+  Never terminates
+  new Level1{
+    test("Test from") {
+
+      val stream = (Block(Pos(1, 1), Pos(1, 1)), List(Left, Up)) #:: Stream.Empty
+
+      val res = from(stream,Set())
+
+      println("** From result is" + res.toSet)
+      assert(1==1)
+    }
+  }
+  */
 
 
 
@@ -114,11 +133,14 @@ class BloxorzSuite extends FunSuite {
   }
 
 
+
 	test("optimal solution length for level 1") {
     new Level1 {
       assert(solution.length == optsolution.length)
     }
   }
+
+  /*
 
   test("neighbours for block starting at 2,2 2,2") {
 
@@ -190,15 +212,17 @@ class BloxorzSuite extends FunSuite {
       val s = Block(Pos(2,2), Pos(2,2))
 
       val leftBlock  = Block(Pos(2,0), Pos(2,1))
-      val stream = neighborsWithHistory(Block(Pos(1,1),Pos(1,1)), List(Left,Up)) toSet
+      val stream = neighborsWithHistory(Block(Pos(1,1),Pos(1,1)), List(Left,Up,Up)) toSet
 
       assert(stream == Set(
-        (Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up)),
-        (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+        (Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up, Up)),
+        (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up, Up))
       )
       )
     }
   }
+
+
 
 
   test("neigbours with history from instructions only take 1 ") {
@@ -253,6 +277,7 @@ class BloxorzSuite extends FunSuite {
       //assert( ! done(Block(Pos(0,0), Pos(0,0))) )
     }
 
-  }
 
+  }
+*/
 }

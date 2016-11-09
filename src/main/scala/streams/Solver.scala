@@ -35,20 +35,25 @@ trait Solver extends GameDef {
    */
   def neighborsWithHistory(b: Block, history: List[Move]): Stream[(Block, List[Move])] = {
 
+
     def helper(neighbours: List[(Block, Move)]): Stream[(Block, List[Move])] = {
 
       //TODO ensure neighbours are legal here
       neighbours match {
         case x :: xs =>
+
+          println("Neighbours with history: Block" + x._1 + ", Move:" + x._2 + " appending hist:" + history)
           (x._1, x._2 :: history ) #:: helper(xs)
 
+
         case Nil     =>
+
+          println("Neighbours with history: Empty Stream")
           Stream.empty
       }
     }
 
     helper(b.legalNeighbors)
-
   }
 
   /**
@@ -85,31 +90,36 @@ trait Solver extends GameDef {
   def from(initial: Stream[(Block, List[Move])],
            explored: Set[Block]): Stream[(Block, List[Move])] = {
 
-    def helper(initial: Stream[(Block, List[Move])],
-               explored: Set[Block]): Stream[(Block, List[Move])] = {
+    def helper(initial: (Block, List[Move]), explored2: Set[Block]): Stream[(Block, List[Move])] = {
 
-      initial match {
-        case Stream.Empty => Stream.Empty
-        case h #:: tl =>
+      for {
+        naysWithHist <- newNeighborsOnly(neighborsWithHistory(initial._1, initial._2), explored2)
 
-          for {
-            naysWithHist <- neighborsWithHistory(h._1, h._2)
-            thing        <- naysWithHist #:: helper(tl, explored union Set(naysWithHist._1))
-          } yield thing
+        thing <- helper( (naysWithHist._1, naysWithHist._2), explored2 union Set(naysWithHist._1) )
+      } yield naysWithHist
 
-      }
     }
 
-    helper(initial, explored)
+
+    val result = for {
+      block <- initial
+      res   <- helper(block, explored)
+    } yield block
+
+    result
   }
 
   /**
    * The stream of all paths that begin at the starting block.
    */
-  lazy val pathsFromStart: Stream[(Block, List[Move])] = from(
-    (Block(startPos, startPos), Nil ) #:: Stream.empty,
-    Set()
-  )
+  lazy val pathsFromStart: Stream[(Block, List[Move])] = {
+
+    println("** pathsFromStart about to call 'from' ")
+    from(
+      (Block(startPos, startPos), Nil ) #:: Stream.empty,
+      Set()
+    )
+  }
 
   /**
    * Returns a stream of all possible pairs of the goal block along
@@ -129,6 +139,20 @@ trait Solver extends GameDef {
    * the first move that the player should perform from the starting
    * position.
    */
-  lazy val solution: List[Move] = pathsToGoal.take(10).head._2
+  lazy val solution: List[Move] = {
+
+
+    println("** Called solution, goal is " + goal)
+    pathsToGoal match {
+      case x #:: xs =>
+        println("Have some paths to goal")
+        pathsToGoal.take(3).head._2
+
+      case Stream.Empty =>
+        println("No paths to goal")
+        Nil
+    }
+
+  }
 
 }
