@@ -2,6 +2,8 @@ package streams
 
 import common._
 
+import scala.annotation.tailrec
+
 /**
  * This component implements the solver for the Bloxorz game
  */
@@ -35,21 +37,11 @@ trait Solver extends GameDef {
    */
   def neighborsWithHistory(b: Block, history: List[Move]): Stream[(Block, List[Move])] = {
 
-
     def helper(neighbours: List[(Block, Move)]): Stream[(Block, List[Move])] = {
 
-      //TODO ensure neighbours are legal here
       neighbours match {
-        case x :: xs =>
-
-          println("Neighbours with history: Block" + x._1 + ", Move:" + x._2 + " appending hist:" + history)
-          (x._1, x._2 :: history ) #:: helper(xs)
-
-
-        case Nil     =>
-
-          println("Neighbours with history: Empty Stream")
-          Stream.empty
+        case x :: xs => (x._1, x._2 :: history ) #:: helper(xs)
+        case Nil     => Stream.empty
       }
     }
 
@@ -63,6 +55,7 @@ trait Solver extends GameDef {
    */
   def newNeighborsOnly(neighbors: Stream[(Block, List[Move])],
                        explored: Set[Block]): Stream[(Block, List[Move])] = neighbors.filter(n => ! explored.contains(n._1))
+
 
   /**
    * The function `from` returns the stream of all possible paths
@@ -87,26 +80,23 @@ trait Solver extends GameDef {
    * of different paths - the implementation should naturally
    * construct the correctly sorted stream.
    */
+
+
   def from(initial: Stream[(Block, List[Move])],
            explored: Set[Block]): Stream[(Block, List[Move])] = {
 
-    def helper(initial: (Block, List[Move]), explored2: Set[Block]): Stream[(Block, List[Move])] = {
+    if (initial.isEmpty)Stream.Empty
+    else {
 
-      for {
-        naysWithHist <- newNeighborsOnly(neighborsWithHistory(initial._1, initial._2), explored2)
+      val nays = for {
+        blockAndMoves <- initial
+        neighbours    <- newNeighborsOnly(neighborsWithHistory(blockAndMoves._1, blockAndMoves._2), explored)
 
-        thing <- helper( (naysWithHist._1, naysWithHist._2), explored2 union Set(naysWithHist._1) )
-      } yield naysWithHist
+        if !(explored contains(neighbours._1))
+      } yield neighbours
 
+      initial #::: from(nays, explored ++ nays.map (_._1))
     }
-
-
-    val result = for {
-      block <- initial
-      res   <- helper(block, explored)
-    } yield block
-
-    result
   }
 
   /**
@@ -117,8 +107,9 @@ trait Solver extends GameDef {
     println("** pathsFromStart about to call 'from' ")
     from(
       (Block(startPos, startPos), Nil ) #:: Stream.empty,
-      Set()
+      Set(Block(startPos, startPos))
     )
+
   }
 
   /**
@@ -126,10 +117,14 @@ trait Solver extends GameDef {
    * with the history how it was reached.
    */
   lazy val pathsToGoal: Stream[(Block, List[Move])] = {
-    for {
+
+    val goalPaths = for {
       paths <- pathsFromStart
-      if paths._1 == goal
+
+      if(paths._1 == (Block(goal, goal)))
     } yield paths
+
+    goalPaths
   }
   /**
    * The (or one of the) shortest sequence(s) of moves to reach the
@@ -141,12 +136,10 @@ trait Solver extends GameDef {
    */
   lazy val solution: List[Move] = {
 
-
-    println("** Called solution, goal is " + goal)
     pathsToGoal match {
       case x #:: xs =>
         println("Have some paths to goal")
-        pathsToGoal.take(3).head._2
+        pathsToGoal.take(1).head._2
 
       case Stream.Empty =>
         println("No paths to goal")
@@ -154,5 +147,4 @@ trait Solver extends GameDef {
     }
 
   }
-
 }

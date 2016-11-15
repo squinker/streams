@@ -44,7 +44,7 @@ class BloxorzSuite extends FunSuite {
   }
 
 
-  /*
+
 	test("terrain function level 1") {
     new Level1 {
       assert(terrain(Pos(0,0)), "0,0")
@@ -104,12 +104,12 @@ class BloxorzSuite extends FunSuite {
     }
   }
 
-*/
 
 
-  /*
 
-  Never terminates
+
+
+
   new Level1{
     test("Test from") {
 
@@ -121,7 +121,7 @@ class BloxorzSuite extends FunSuite {
       assert(1==1)
     }
   }
-  */
+
 
 
 
@@ -140,7 +140,7 @@ class BloxorzSuite extends FunSuite {
     }
   }
 
-  /*
+
 
   test("neighbours for block starting at 2,2 2,2") {
 
@@ -279,5 +279,5 @@ class BloxorzSuite extends FunSuite {
 
 
   }
-*/
+
 }
